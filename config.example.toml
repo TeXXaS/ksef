@@ -1,0 +1,8 @@
+[ksef]
+# environment: "test", "demo", or "prod"
+environment = "test"
+# NIP of the Polish taxpayer uploading invoices
+nip = "1234567890"
+# generate token via KSeF web portal (ksef.mf.gov.pl)
+# it is used only for prod env. so testing can be done with nip only
+token = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"

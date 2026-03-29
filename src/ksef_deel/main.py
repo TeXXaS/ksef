@@ -153,6 +153,15 @@ def _cmd_download(args: argparse.Namespace) -> None:
         sys.stdout.buffer.write(xml_bytes)
 
 
+def _cmd_schema_update(args: argparse.Namespace) -> None:
+    from ksef_deel.validator import _ensure_schemas
+
+    _setup_logging(args.verbose)
+    logger.info("Forcing schema refresh...")
+    _ensure_schemas(force_refresh=True)
+    logger.info("Schemas up to date.")
+
+
 def _parse_date(value: str) -> date:
     return date.fromisoformat(value)
 
@@ -202,6 +211,11 @@ def main() -> None:
     download_parser.add_argument("ksef_number", help="KSeF invoice number")
     download_parser.add_argument("-o", "--output", type=Path, help="Save XML to file (default: stdout)")
     download_parser.set_defaults(func=_cmd_download)
+
+    # --- schema-update ---
+    schema_parser = subparsers.add_parser("schema-update", help="Force re-download of XSD schemas from crd.gov.pl")
+    schema_parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose logging")
+    schema_parser.set_defaults(func=_cmd_schema_update)
 
     args = parser.parse_args()
     args.func(args)

@@ -1,12 +1,12 @@
-"""Generate KSeF FA(2) compliant XML from parsed Deel invoice data.
+"""Generate KSeF FA(3) compliant XML from parsed Deel invoice data.
 
-Schema: http://crd.gov.pl/wzor/2023/06/29/12648/
-FormCode: FA (2), SchemaVersion: 1-0E
+Schema: http://crd.gov.pl/wzor/2025/06/25/13775/
+FormCode: FA (3), SchemaVersion: 1-0E
 
 Deel contractor invoices: Polish freelancer → foreign client.
 - Podmiot1 = Polish taxpayer / contractor (the one uploading to KSeF)
 - Podmiot2 = Foreign buyer (e.g. Piano Software Inc, US)
-- VAT rate = "np" (nie podlega — export of services, not subject to Polish VAT)
+- VAT rate = "np II" (nie podlega — export of services, place of supply outside PL per art. 28b)
 - Currency = PLN
 - RodzajFaktury = "VAT"
 """
@@ -18,7 +18,7 @@ from lxml import etree
 
 from ksef_deel.invoice_model import DeelInvoice, Party
 
-FA_NAMESPACE = "http://crd.gov.pl/wzor/2023/06/29/12648/"
+FA_NAMESPACE = "http://crd.gov.pl/wzor/2025/06/25/13775/"
 XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance"
 
 NSMAP = {
@@ -81,7 +81,7 @@ def _format_quantity(value: Decimal) -> str:
 
 
 def generate_invoice_xml(invoice: DeelInvoice) -> bytes:
-    """Generate FA(2) XML for a Deel contractor invoice.
+    """Generate FA(3) XML for a Deel contractor invoice.
 
     - Podmiot1 = invoice.seller (Polish contractor, NIP required)
     - Podmiot2 = invoice.buyer (foreign company)
@@ -100,10 +100,10 @@ def _build_naglowek(root: etree._Element) -> None:
     naglowek = _el(root, "Naglowek")
 
     kod_formularza = _el(naglowek, "KodFormularza", "FA")
-    kod_formularza.set("kodSystemowy", "FA (2)")
+    kod_formularza.set("kodSystemowy", "FA (3)")
     kod_formularza.set("wersjaSchemy", "1-0E")
 
-    _el(naglowek, "WariantFormularza", "2")
+    _el(naglowek, "WariantFormularza", "3")
     _el(naglowek, "DataWytworzeniaFa", datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
     _el(naglowek, "SystemInfo", "ksef-deel")
 
@@ -157,6 +157,11 @@ def _build_podmiot2(root: etree._Element, buyer: Party) -> None:
     if buyer.address_line2:
         _el(adres, "AdresL2", buyer.address_line2)
 
+    # JST — required in FA(3): "2" = not a subordinate local government unit
+    _el(podmiot2, "JST", "2")
+    # GV — required in FA(3): "2" = not a VAT group member
+    _el(podmiot2, "GV", "2")
+
 
 def _build_fa(root: etree._Element, invoice: DeelInvoice) -> None:
     """Fa section: invoice financial details + line items.
@@ -178,8 +183,8 @@ def _build_fa(root: etree._Element, invoice: DeelInvoice) -> None:
         _el(okres, "P_6_Od", invoice.service_period.date_from.isoformat())
         _el(okres, "P_6_Do", invoice.service_period.date_to.isoformat())
 
-    # P_13_11 = net amount not subject to Polish VAT (np rate)
-    _el(fa, "P_13_11", _format_amount(invoice.total_net))
+    # P_13_8 = net amount for services outside PL territory (np II — art. 28b)
+    _el(fa, "P_13_8", _format_amount(invoice.total_net))
 
     # P_15 = total gross amount (required)
     _el(fa, "P_15", _format_amount(invoice.total_gross))
@@ -191,7 +196,7 @@ def _build_fa(root: etree._Element, invoice: DeelInvoice) -> None:
     _el(adnotacje, "P_18", "2")  # not reverse charge annotation
     _el(adnotacje, "P_18A", "2")  # not split payment mechanism
 
-    # Zwolnienie: P_19N=1 (not VAT-exempt — services are "np", not "zw")
+    # Zwolnienie: P_19N=1 (not VAT-exempt — services are "np II", not "zw")
     zwolnienie = _el(adnotacje, "Zwolnienie")
     _el(zwolnienie, "P_19N", "1")
 

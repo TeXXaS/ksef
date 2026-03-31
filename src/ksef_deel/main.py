@@ -74,12 +74,12 @@ def _cmd_upload(args: argparse.Namespace) -> None:
             config.nip,
         )
 
-    # Step 2: Generate FA(2) XML
-    logger.info("Generating FA(2) XML...")
+    # Step 2: Generate FA(3) XML
+    logger.info("Generating FA(3) XML...")
     xml_bytes = generate_invoice_xml(invoice)
 
     # Step 3: Validate against XSD
-    logger.info("Validating against FA(2) XSD schema...")
+    logger.info("Validating against FA(3) XSD schema...")
     try:
         validate_invoice_xml(xml_bytes)
         logger.info("Validation PASSED")

@@ -54,7 +54,7 @@ def _make_invoice(**overrides) -> DeelInvoice:
                 quantity=Decimal("1"),
                 unit_price_net=Decimal("27000.00"),
                 net_amount=Decimal("27000.00"),
-                vat_rate="np",
+                vat_rate="np II",
                 vat_amount=Decimal("0"),
                 gross_amount=Decimal("27000.00"),
             ),
@@ -89,7 +89,7 @@ class TestXmlGeneration:
         ns = {"fa": FA_NAMESPACE}
         kod = root.find("fa:Naglowek/fa:KodFormularza", ns)
         assert kod.text == "FA"
-        assert kod.get("kodSystemowy") == "FA (2)"
+        assert kod.get("kodSystemowy") == "FA (3)"
         assert kod.get("wersjaSchemy") == "1-0E"
 
     def test_podmiot1_has_seller_nip(self):
@@ -128,8 +128,8 @@ class TestXmlGeneration:
         xml_bytes = generate_invoice_xml(invoice)
         root = etree.fromstring(xml_bytes)
         ns = {"fa": FA_NAMESPACE}
-        p13_11 = root.find("fa:Fa/fa:P_13_11", ns)
-        assert p13_11.text == "27000.00"
+        p13_8 = root.find("fa:Fa/fa:P_13_8", ns)
+        assert p13_8.text == "27000.00"
         p15 = root.find("fa:Fa/fa:P_15", ns)
         assert p15.text == "27000.00"
 
@@ -147,8 +147,24 @@ class TestXmlGeneration:
 
     def test_line_items_generated(self):
         items = [
-            LineItem("Service A", Decimal("1"), Decimal("1000"), Decimal("1000"), "np", Decimal("0"), Decimal("1000")),
-            LineItem("Service B", Decimal("2"), Decimal("500"), Decimal("1000"), "np", Decimal("0"), Decimal("1000")),
+            LineItem(
+                "Service A",
+                Decimal("1"),
+                Decimal("1000"),
+                Decimal("1000"),
+                "np II",
+                Decimal("0"),
+                Decimal("1000"),
+            ),
+            LineItem(
+                "Service B",
+                Decimal("2"),
+                Decimal("500"),
+                Decimal("1000"),
+                "np II",
+                Decimal("0"),
+                Decimal("1000"),
+            ),
         ]
         invoice = _make_invoice(
             line_items=items,
@@ -173,7 +189,15 @@ class TestXsdValidation:
 
     def test_multiple_line_items_pass_xsd(self):
         items = [
-            LineItem(f"Service {i}", Decimal("1"), Decimal("100"), Decimal("100"), "np", Decimal("0"), Decimal("100"))
+            LineItem(
+                f"Service {i}",
+                Decimal("1"),
+                Decimal("100"),
+                Decimal("100"),
+                "np II",
+                Decimal("0"),
+                Decimal("100"),
+            )
             for i in range(5)
         ]
         invoice = _make_invoice(

@@ -1,6 +1,6 @@
-"""Validate generated FA(2) XML against the KSeF XSD schema.
+"""Validate generated FA(3) XML against the KSeF XSD schema.
 
-Schema source: http://crd.gov.pl/wzor/2023/06/29/12648/schemat.xsd
+Schema source: http://crd.gov.pl/wzor/2025/06/25/13775/schemat.xsd
 Dependencies are downloaded recursively and resolved locally via a custom URL resolver.
 
 Schemas are cached locally. If the oldest file is >60 days old, all schemas are
@@ -28,8 +28,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 SCHEMA_DIR = Path(__file__).resolve().parent.parent.parent / "schema"
-MAIN_SCHEMA_URL = "https://crd.gov.pl/wzor/2023/06/29/12648/schemat.xsd"
-MAIN_SCHEMA_LOCAL = "FA_2_schemat.xsd"
+MAIN_SCHEMA_URL = "https://crd.gov.pl/wzor/2025/06/25/13775/schemat.xsd"
+MAIN_SCHEMA_LOCAL = "FA_3_schemat.xsd"
 
 SCHEMA_MAX_AGE_DAYS = 60
 
@@ -122,7 +122,7 @@ class ValidationError(Exception):
 
 
 def validate_invoice_xml(xml_bytes: bytes) -> None:
-    """Validate invoice XML against FA(2) XSD schema.
+    """Validate invoice XML against FA(3) XSD schema.
 
     Raises ValidationError if the XML does not conform.
     """

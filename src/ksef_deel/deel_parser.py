@@ -260,11 +260,11 @@ def parse_deel_pdf(pdf_path: Path) -> DeelInvoice:
     vat_match = re.search(r"VAT\s+(\d+)%\s+(.+)$", full_text, re.MULTILINE)
     total_vat = _parse_amount(vat_match.group(2)) if vat_match else Decimal("0")
 
-    # VAT rate
-    vat_rate = "np"
+    # VAT rate: FA(3) uses "np II" for export of services (art. 28b — place of supply outside PL)
+    vat_rate = "np II"
     if vat_match:
         rate_pct = vat_match.group(1)
-        vat_rate = "np" if rate_pct == "0" else rate_pct
+        vat_rate = "np II" if rate_pct == "0" else rate_pct
 
     # Service period
     period_match = re.search(

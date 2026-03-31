@@ -59,7 +59,7 @@ def test_invoice(ksef_config: KsefConfig) -> DeelInvoice:
                 quantity=Decimal("1"),
                 unit_price_net=Decimal("1.00"),
                 net_amount=Decimal("1.00"),
-                vat_rate="np",
+                vat_rate="np II",
                 vat_amount=Decimal("0.00"),
                 gross_amount=Decimal("1.00"),
             ),

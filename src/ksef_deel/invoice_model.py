@@ -23,7 +23,7 @@ class LineItem:
     quantity: Decimal
     unit_price_net: Decimal
     net_amount: Decimal
-    vat_rate: str  # "np" for not-taxable, "zw" for exempt, "23", "8", "0", etc.
+    vat_rate: str  # "np I"/"np II" for not-taxable, "zw" for exempt, "23", "8", "0", etc.
     vat_amount: Decimal
     gross_amount: Decimal
     unit: str = "usł."  # "usługa" (service) by default

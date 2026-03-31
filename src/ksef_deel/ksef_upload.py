@@ -51,7 +51,7 @@ def upload_invoice(config: KsefConfig, invoice_xml: bytes) -> UploadResult:
         )
 
     logger.info("Opening online session...")
-    with auth.online_session(form_code=FormSchema.FA2) as session:
+    with auth.online_session(form_code=FormSchema.FA3) as session:
         logger.info("Session opened.")
 
         result = session.send_invoice(invoice_xml=invoice_xml)
